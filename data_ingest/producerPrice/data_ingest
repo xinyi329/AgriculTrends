@@ -1,0 +1,11 @@
+// Ian I Lam
+
+// upload the data from local computer to DUMBO
+
+scp Prices_E_All_Data_NOFLAG.csv dumbo:/home/iil209/bdad_project 
+scp PricesArchive_E_All_Data.csv dumbo:/home/iil209/bdad_project 
+
+// put the datasets into HDFS
+
+hdfs dfs -put Prices_E_All_Data_NOFLAG.csv bdad_project
+hdfs dfs -put PricesArchive_E_All_Data.csv bdad_project
