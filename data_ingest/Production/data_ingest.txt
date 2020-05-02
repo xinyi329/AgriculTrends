@@ -1,0 +1,6 @@
+//the data file is directly downloaded from FAO website
+//load to Dumbo and put into hdfs
+scp Production_Crops_E_All_Data_Normalized.csv dumbo:~/
+hdfs dfs -mkdir BDAD_project
+hdfs dfs -put Production_Crops_E_All_Data_Normalized.csv BDAD_project
+hdfs dfs -ls BDAD_project
