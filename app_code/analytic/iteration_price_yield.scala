@@ -13,7 +13,7 @@ priceCorrelationDF.agg(avg("AbsProducerPriceProductionCorr"), min("ProducerPrice
  * +-----------------------------------+--------------------------------+--------------------------------+
  * |avg(AbsProducerPriceProductionCorr)|min(ProducerPriceProductionCorr)|max(ProducerPriceProductionCorr)|
  * +-----------------------------------+--------------------------------+--------------------------------+
- * |                 0.4956380382709307|             -1.0000000000000007|              1.0000000000000002|
+ * |                 0.4956380382709309|             -1.0000000000000007|              1.0000000000000002|
  * +-----------------------------------+--------------------------------+--------------------------------+
  */
 
@@ -32,12 +32,30 @@ val agriculTrendsChangeRateDF = agriculTrendsDF.withColumn("LastYear", col("Year
 
 agriculTrendsChangeRateDF.write.mode(SaveMode.Overwrite).saveAsTable("xl2700.AgriculTrendsChangeRate")
 
-agriculTrendsChangeRateDF.orderBy('ProducerPriceChangeRate.asc_nulls_last).show(100)
-
 agriculTrendsChangeRateDF.count()
 /*
  * Long = 160473
  */
+
+// Correlation
+
+val priceChangeCorrelationDF = agriculTrendsChangeRateDF.groupBy("Country", "Crop").agg(corr("ProducerPriceChangeRate", "ProductionChangeRate").alias("ProducerPriceProductionChangeRateCorr"))
+                                                        .withColumn("AbsProducerPriceProductionChangeRateCorr", abs(col("ProducerPriceProductionChangeRateCorr")))
+                                                        .na.drop()
+
+priceChangeCorrelationDF.agg(avg("AbsProducerPriceProductionChangeRateCorr"), min("ProducerPriceProductionChangeRateCorr"), max("ProducerPriceProductionChangeRateCorr")).show()
+
+/*
+ * +---------------------------------------------+------------------------------------------+------------------------------------------+
+ * |avg(AbsProducerPriceProductionChangeRateCorr)|min(ProducerPriceProductionChangeRateCorr)|max(ProducerPriceProductionChangeRateCorr)|
+ * +---------------------------------------------+------------------------------------------+------------------------------------------+
+ * |                          0.23560043235676673|                       -1.0000000000000002|                        1.0000000000000002|
+ * +---------------------------------------------+------------------------------------------+------------------------------------------+
+ */
+
+// Check outliers
+
+agriculTrendsChangeRateDF.orderBy('ProducerPriceChangeRate.asc_nulls_last).show(100)
 
 // Filter out abnormal data points: for each country and year, most < -80% or most > 100%
 
@@ -54,14 +72,14 @@ val abnormalCountryYearCountDF = abnormalChangeRateDF.groupBy("Country", "Year")
                                                            Seq("Country", "Year"), "left")
                                                      .na.fill(0)
 
-abnormalCountryYearCountDF.orderBy('ChangeRateLowCount.desc_nulls_last).show(50)
-
-abnormalCountryYearCountDF.orderBy('ChangeRateHighCount.desc_nulls_last).show(50)
-
 abnormalCountryYearCountDF.count()
 /*
  * Long = 4875
  */
+
+abnormalCountryYearCountDF.orderBy('ChangeRateLowCount.desc_nulls_last).show(50)
+
+abnormalCountryYearCountDF.orderBy('ChangeRateHighCount.desc_nulls_last).show(50)
 
 val normalCountryYearDF = abnormalCountryYearCountDF.filter(col("ChangeRateLowCount") / col("Count") < 0.9 && col("ChangeRateHighCount") / col("Count") < 0.9)
                                                     .select("Country", "Year")
@@ -80,6 +98,8 @@ agriculTrendsChangeRateFixedDF.count()
  * Long = 157067
  */
 
+// val agriculTrendsChangeRateFixedDF = spark.sql("SELECT * FROM xl2700.AgriculTrendsChangeRateFixed")
+
 // Correlation
 
 val priceChangeCorrelationFixedDF = agriculTrendsChangeRateFixedDF.groupBy("Country", "Crop").agg(corr("ProducerPriceChangeRate", "ProductionChangeRate").alias("ProducerPriceProductionChangeRateCorr"))
@@ -91,8 +111,102 @@ priceChangeCorrelationFixedDF.agg(avg("AbsProducerPriceProductionChangeRateCorr"
  * +---------------------------------------------+------------------------------------------+------------------------------------------+
  * |avg(AbsProducerPriceProductionChangeRateCorr)|min(ProducerPriceProductionChangeRateCorr)|max(ProducerPriceProductionChangeRateCorr)|
  * +---------------------------------------------+------------------------------------------+------------------------------------------+
- * |                           0.2467272931056066|                       -1.0000000000000002|                        1.0000000000000002|
+ * |                          0.24672729310560737|                       -1.0000000000000002|                        1.0000000000000002|
  * +---------------------------------------------+------------------------------------------+------------------------------------------+
  */
 
- // Statistics TBC
+// Statistics
+
+agriculTrendsChangeRateFixedDF.filter(col("ProducerPriceChangeRate") <= 1)
+                              .withColumn("RoundProducerPriceChangeRate", round(col("ProducerPriceChangeRate"), 1))
+                              .groupBy("RoundProducerPriceChangeRate").count()
+                              .orderBy('RoundProducerPriceChangeRate.desc_nulls_last)
+                              .show(21)
+/*
+ * +----------------------------+-----+                                            
+ * |RoundProducerPriceChangeRate|count|
+ * +----------------------------+-----+
+ * |                         1.0|  852|
+ * |                         0.9| 1268|
+ * |                         0.8| 1672|
+ * |                         0.7| 2300|
+ * |                         0.6| 3029|
+ * |                         0.5| 4322|
+ * |                         0.4| 6306|
+ * |                         0.3|10635|
+ * |                         0.2|17169|
+ * |                         0.1|31650|
+ * |                         0.0|43854|
+ * |                        -0.1|14528|
+ * |                        -0.2| 7168|
+ * |                        -0.3| 3848|
+ * |                        -0.4| 1770|
+ * |                        -0.5|  861|
+ * |                        -0.6|  428|
+ * |                        -0.7|  183|
+ * |                        -0.8|   91|
+ * |                        -0.9|   29|
+ * |                        -1.0|    3|
+ * +----------------------------+-----+
+ */
+
+val lowerProducerPriceCount = agriculTrendsChangeRateFixedDF.filter(col("ProducerPriceChangeRate") < -0.5).count()
+
+val lowerProducerPriceHigherProductionCount = agriculTrendsChangeRateFixedDF.filter(col("ProducerPriceChangeRate") < -0.5 && col("ProductionChangeRate") > 0).count()
+
+val lowerProducerPriceHigherProductionRate = lowerProducerPriceHigherProductionCount.toFloat / lowerProducerPriceCount.toFloat
+/*
+ * Float = 0.63703704
+ */
+
+agriculTrendsChangeRateFixedDF.filter(col("ProducerPriceChangeRate") < -0.5 && col("ProductionChangeRate") > 0)
+                              .withColumn("RoundProductionChangeRate", round(col("ProductionChangeRate"), 1))
+                              .groupBy("RoundProductionChangeRate").count()
+                              .orderBy('RoundProductionChangeRate.desc_nulls_last)
+                              .show(100)
+/*
+ * +-------------------------+-----+                                               
+ * |RoundProductionChangeRate|count|
+ * +-------------------------+-----+
+ * |                     13.2|    1|
+ * |                     11.0|    1|
+ * |                      9.6|    1|
+ * |                      8.6|    1|
+ * |                      7.2|    1|
+ * |                      7.0|    1|
+ * |                      5.9|    1|
+ * |                      5.3|    1|
+ * |                      4.8|    1|
+ * |                      4.4|    1|
+ * |                      4.3|    1|
+ * |                      3.9|    1|
+ * |                      3.8|    1|
+ * |                      3.2|    2|
+ * |                      3.0|    1|
+ * |                      2.6|    1|
+ * |                      2.5|    1|
+ * |                      2.4|    2|
+ * |                      2.1|    5|
+ * |                      2.0|    2|
+ * |                      1.9|    5|
+ * |                      1.8|    3|
+ * |                      1.7|    4|
+ * |                      1.6|    4|
+ * |                      1.5|    2|
+ * |                      1.4|    8|
+ * |                      1.3|    9|
+ * |                      1.2|    2|
+ * |                      1.1|    2|
+ * |                      1.0|   10|
+ * |                      0.9|   13|
+ * |                      0.8|   23|
+ * |                      0.7|   20|
+ * |                      0.6|   21|
+ * |                      0.5|   35|
+ * |                      0.4|   25|
+ * |                      0.3|   70|
+ * |                      0.2|   97|
+ * |                      0.1|  177|
+ * |                      0.0|  131|
+ * +-------------------------+-----+
+ */
