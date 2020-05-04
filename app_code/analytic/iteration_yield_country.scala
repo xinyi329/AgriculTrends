@@ -10,7 +10,8 @@ val totalYieldDF = agriculTrendsDF.groupBy("country", "crop").agg(sum("yield") a
 val windowSpecYield  = Window.partitionBy("country").orderBy(col("totalYield").desc)
 
 // Query for showing the crop that has the most yield in each country
-val mostYieldDF = totalYieldDF.withColumn("rank",dense_rank().over(windowSpecYield)).select("country", "crop", "totalYield").where("rank ==1")
+// val mostYieldDF = totalYieldDF.withColumn("rank",dense_rank().over(windowSpecYield)).select("country", "crop", "totalYield").where("rank ==1")
+val mostYieldDF = totalYieldDF.withColumn("row_num",row_number.over(windowSpecYield)).select("country", "crop", "totalYield").where("row_num == 1")
 mostYieldDF.write.mode(SaveMode.Overwrite).saveAsTable("iil209.AgriculTrendsMostYield")
 
 // Query for top 10 crop yields for each country
@@ -22,7 +23,9 @@ val totalProductionDF = agriculTrendsDF.groupBy("country", "crop").agg(sum("prod
 val windowSpecProd  = Window.partitionBy("country").orderBy(col("totalProduction").desc)
 
 // Query for showing the crop that has the most production in each country
-val mostProdDF = totalProductionDF.withColumn("rank",dense_rank().over(windowSpecProd)).select("country", "crop", "totalProduction").where("rank ==1")
+// val mostProdDF = totalProductionDF.withColumn("rank",dense_rank().over(windowSpecProd)).select("country", "crop", "totalProduction").where("rank ==1")
+val mostProdDF = totalProductionDF.withColumn("row_num",row_number.over(windowSpecProd)).select("country", "crop", "totalProduction").where("row_num == 1")
+
 mostProdDF.write.mode(SaveMode.Overwrite).saveAsTable("iil209.AgriculTrendsMostProd")
 
 // Query for showing the top 10 crops that have the most production in each country
