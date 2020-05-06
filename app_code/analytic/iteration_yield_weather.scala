@@ -21,7 +21,7 @@ yieldCorrelationDF.agg(avg("AbsYieldPrecipitationCorr"), avg("AbsYieldTemperatur
  * +------------------------------+----------------------------+--------------------+------------------------------+----------------------------+
  */
 
-// Heat Map - Yield vs. Precipitation & Temperature by Crop
+// Round and group, for Yield vs. Precipitation & Temperature by Crop heat map
 
 val yieldHeatMapDF = agriculTrendsDF.withColumn("RoundPrecipitation", floor(col("Precipitation") / 10) * 10)
                                     .withColumn("RoundTemperature", floor(col("Temperature")))
