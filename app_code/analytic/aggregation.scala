@@ -11,12 +11,16 @@ val productionDF = spark.read.option("inferSchema", "true").csv("hdfs:/user/yl61
 val producerPriceDF = spark.read.option("inferSchema", "true").csv("hdfs:/user/iil209/bdad_project/cleaned_data_combined_v2")
                            .toDF("CountryCode", "Country", "CropCode", "Crop", "Year", "ProducerPrice")
 
+// Join all dataframes by ISO3 code and FAO CountryCode
+
 val weatherDF = precipitationDF.join(temperatureDF, Seq("ISO3", "Year"), "outer")
 val cropDF = productionDF.join(producerPriceDF.select("CountryCode", "CropCode", "Year", "ProducerPrice"), Seq("CountryCode", "CropCode", "Year"), "left")
                          .select("CountryCode", "Crop", "Year", "AreaHarvested", "Yield", "Production", "ProducerPrice")
 val agriculTrendsDF = cropDF.join(countryCodeDF, cropDF("CountryCode") === countryCodeDF("FAOSTAT"), "left").join(weatherDF, Seq("ISO3", "Year"), "left")
                             .select("Country", "Crop", "Year", "AreaHarvested", "Yield", "Production", "ProducerPrice", "Precipitation", "Temperature")
                             .na.drop(Seq("Country", "Crop", "Year", "AreaHarvested", "Yield", "Production", "Precipitation", "Temperature"))
+
+// Get all countries and crops
 
 val countryListDF = agriculTrendsDF.select("Country").distinct()
 val cropListDF = agriculTrendsDF.select("Crop").distinct()
