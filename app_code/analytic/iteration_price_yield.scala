@@ -37,6 +37,8 @@ agriculTrendsChangeRateDF.count()
  * Long = 160473
  */
 
+// val agriculTrendsChangeRateDF = spark.sql("SELECT * FROM xl2700.AgriculTrendsChangeRate")
+
 // Correlation
 
 val priceChangeCorrelationDF = agriculTrendsChangeRateDF.groupBy("Country", "Crop").agg(corr("ProducerPriceChangeRate", "ProductionChangeRate").alias("ProducerPriceProductionChangeRateCorr"))
