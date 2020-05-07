@@ -11,7 +11,6 @@ An analytic is introduced to provide insights in agriculture production and mark
 ```
 .
 ├── README.md
-├── act_rem_code
 ├── app_code
 │   ├── analytic
 │   │   ├── aggregation.scala
@@ -39,9 +38,6 @@ An analytic is introduced to provide insights in agriculture production and mark
 │   │   └── climate_ingest.ipynb
 │   └── producerPrice
 │       └── data_ingest
-├── documents
-│   ├── AgriculTrends_DesignDiagram.pdf
-│   └── AgriculTrends_DesignDiagram.pptx
 ├── etl_code
 │   ├── climate
 │   │   └── climate_clean.scala
@@ -56,9 +52,11 @@ An analytic is introduced to provide insights in agriculture production and mark
 │   │   └── profiling.scala
 │   └── production
 │       └── data_profiling.scala
-└── screenshots
-    ├── analytic
-    └── visualization
+├── screenshots
+│   ├── analytic
+│   └── visualization
+└── test_code
+    └── regression.scala
 ```
 * `/app_code`: source code for the application, includes the Spark Scala analytics code and the Tableau visualization code
 * `/app_code/analytic`:
@@ -72,6 +70,7 @@ An analytic is introduced to provide insights in agriculture production and mark
 * `/etl_code`: Scala source code used to clean and transform each of the three datasets in Spark
 * `/profiling_code`: Scala source code for profiling the three datasets, before and after the ETL step
 * `/screenshots`: screenshots of analytic running, includes the analytic result from Spark and the visualization result from Tableau
+* `/test_code`: unused regression code due to bad performance
 
 ## How to Build/Run Code
 No building of code is required for this application.
