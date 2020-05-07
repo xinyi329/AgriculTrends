@@ -28,3 +28,9 @@ val yieldHeatMapDF = agriculTrendsDF.withColumn("RoundPrecipitation", floor(col(
                                     .groupBy("Crop", "RoundPrecipitation", "RoundTemperature").agg(sum("Yield").alias("YieldSum"), count(lit(1)).alias("YieldRecordNum"), avg("Yield").alias("YieldAvg"))
 
 yieldHeatMapDF.write.mode(SaveMode.Overwrite).saveAsTable("xl2700.AgriculTrendsYieldHeatMap")
+
+// Get all distinct weather data
+
+val agriculTrendsWeatherDF = agriculTrendsDF.select("Country", "Year", "Precipitation", "Temperature").distinct()
+
+agriculTrendsWeatherDF.write.mode(SaveMode.Overwrite).saveAsTable("xl2700.AgriculTrendsWeather")
