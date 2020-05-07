@@ -93,13 +93,13 @@ The results of the runs are saved as Hive Tables in the HDFS. The `/screenshots`
 
 ## Input Datasets
 ### Crops
-Source: Crop data from 1961-2018: http://www.fao.org/faostat/en/#data/QC  
-Dumbo Location: hdfs:/user/yl6183/BDAD_project/cleaned_data_v2
+**Source:** Crop data from 1961-2018: http://www.fao.org/faostat/en/#data/QC  
+**Dumbo Location:** hdfs:/user/yl6183/BDAD_project/cleaned_data_v2
 
 ### Producer Prices - Annual
-Source: Producer Prices from 1966-1991: www.fao.org/faostat/en/#data/PA  , Producer Prices from 1992-2018: www.fao.org/faostat/en/#data/PP  
-Dumbo Location: hdfs:/user/iil209/bdad_project/cleaned_data_combined_v2
+**Source:** Producer Prices from 1966-1991: www.fao.org/faostat/en/#data/PA  , Producer Prices from 1992-2018: www.fao.org/faostat/en/#data/PP  
+**Dumbo Location:** hdfs:/user/iil209/bdad_project/cleaned_data_combined_v2
 
 ### World Bank Climate Data
-Source: https://datahelpdesk.worldbank.org/knowledgebase/articles/902061-climate-data-api  
-Dumbo Location: hdfs:/user/xl2700/agricultrends/climate/
+**Source:** https://datahelpdesk.worldbank.org/knowledgebase/articles/902061-climate-data-api  
+**Dumbo Location:** hdfs:/user/xl2700/agricultrends/climate/
