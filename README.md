@@ -10,7 +10,6 @@ An analytic is introduced to provide insights in agriculture production and mark
 
 ```
 .
-.
 ├── README.md
 ├── act_rem_code
 ├── app_code
