@@ -10,19 +10,24 @@ An analytic is introduced to provide insights in agriculture production and mark
 
 ```
 .
+.
 ├── README.md
+├── act_rem_code
 ├── app_code
 │   ├── analytic
 │   │   ├── aggregation.scala
 │   │   ├── iteration_price_yield.scala
 │   │   ├── iteration_yield_country.scala
 │   │   ├── iteration_yield_weather.scala
-│   │   ├── regression.scala
 │   │   ├── regression_price.scala
 │   │   └── regression_yield.scala
 │   └── visualization
 │       ├── AgriculTrends.twb
 │       └── tables
+│           ├── AgriculTrendsAggregation.csv
+│           ├── AgriculTrendsChangeRate.csv
+│           ├── AgriculTrendsPriceChangeRegression.csv
+│           ├── AgriculTrendsWeather.csv
 │           ├── AgriculTrendsYieldHeatMap.csv
 │           ├── AgriculTrendsYieldRegression.csv
 │           ├── agriculTrendsMostYield.csv
@@ -35,6 +40,9 @@ An analytic is introduced to provide insights in agriculture production and mark
 │   │   └── climate_ingest.ipynb
 │   └── producerPrice
 │       └── data_ingest
+├── documents
+│   ├── AgriculTrends_DesignDiagram.pdf
+│   └── AgriculTrends_DesignDiagram.pptx
 ├── etl_code
 │   ├── climate
 │   │   └── climate_clean.scala
@@ -53,25 +61,23 @@ An analytic is introduced to provide insights in agriculture production and mark
     ├── analytic
     └── visualization
 ```
-* /app_code: source code for the application, includes the Spark Scala analytics code and the Tableau visualization code
-* /app_code/analytic:
-  * aggregation.scala: joins the three datasets into one large dataframe
-  * iteration_price_yield.scala: analyzes the relationship between producer price and crop yield
-  * iteration_yield_country.scala: analyzes the relationship between crop yield and the country
-  * iteration_yield_weather.scala: analyzes the relationship between crop yield and weather
-  * regression.scala
-  * regression_price.scala: linear regression for producer price
-  * regression_yield.scala: linear regression for crop yield  
-
-* /data_ingest: commands used to upload each of the three datasets to the Dumbo HDFS
-* /etl_code: Scala source code used to clean and transform each of the three datasets in Spark
-* /profiling_code: Scala source code for profiling the three datasets, before and after the ETL step
-* /screenshots: screenshots of analytic running, includes the analytic result from Spark and the visualization result from Tableau
+* `/app_code`: source code for the application, includes the Spark Scala analytics code and the Tableau visualization code
+* `/app_code/analytic`:
+  * `aggregation.scala`: joins the three datasets into one large dataframe
+  * `iteration_price_yield.scala`: analyzes the relationship between producer price and crop yield
+  * `iteration_yield_country.scala`: analyzes the relationship between crop yield and the country
+  * `iteration_yield_weather.scala`: analyzes the relationship between crop yield and weather
+  * `regression_price.scala`: linear regression for producer price
+  * `regression_yield.scala`: linear regression for crop yield  
+* `/data_ingest`: commands used to upload each of the three datasets to the Dumbo HDFS
+* `/etl_code`: Scala source code used to clean and transform each of the three datasets in Spark
+* `/profiling_code`: Scala source code for profiling the three datasets, before and after the ETL step
+* `/screenshots`: screenshots of analytic running, includes the analytic result from Spark and the visualization result from Tableau
 
 ## How to Build/Run Code
 No building of code is required for this application.
 
-To upload the datasets into HDFS, follow the commands within /data_ingest directory.  
+To upload the datasets into HDFS, follow the commands within `/data_ingest` directory.  
 
 All the cleaning, ETL, and analysis codes are run in the Spark Shell (REPL). In order to run the code, copy and paste the code into the Spark Shell. Comments are also written within the code to provide clearer description of the different analyses.
 
@@ -84,7 +90,7 @@ beeline -u jdbc:hive2://babar.es.its.nyu.edu:10000/[netID] -n [netID] -w [textFi
 
 
 ## Where to Find Results of Run
-The results of the runs are saved as Hive Tables in the HDFS. The /screenshots directory also contains examples of the expected results.
+The results of the runs are saved as Hive Tables in the HDFS. The `/screenshots` directory also contains examples of the expected results.
 
 
 ## Input Datasets
