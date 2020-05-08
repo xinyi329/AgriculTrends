@@ -12,6 +12,16 @@ An analytic is introduced to provide insights in agriculture production and mark
 .
 ├── README.md
 ├── app_code
+│   ├── BDAD_prject
+│   │   ├── build.sbt
+│   │   ├── project
+│   │   ├── src
+│   │   │   └── main
+│   │   │       └── scala
+│   │   │           └── BDAD_project.scala
+│   │   └── target
+│   │       └── scala-2.11
+│   │           └──bdad_prject_2.11-0.1.jar
 │   ├── analytic
 │   │   ├── aggregation.scala
 │   │   ├── iteration_price_yield.scala
@@ -55,10 +65,14 @@ An analytic is introduced to provide insights in agriculture production and mark
 ├── screenshots
 │   ├── analytic
 │   └── visualization
+│       ├── AgriculTrends.png
+│       └── AgriculTrends_Yield_Weather.png
 └── test_code
     └── regression.scala
 ```
-* `/app_code`: source code for the application, includes the Spark Scala analytics code and the Tableau visualization code
+* `/app_code`: source code for the application, includes the Spark Scala analytics code, the JAR file, and the Tableau visualization code
+* `/app_code/BDAD_projct/target/scala-2.11`: contains the project JAR file
+  * `bdad_prject_2.11-0.1.jar`: final project JAR file that can be used for Spark job.
 * `/app_code/analytic`:
   * `aggregation.scala`: joins the three datasets into one large dataframe
   * `iteration_price_yield.scala`: analyzes the relationship between producer price and crop yield
@@ -77,7 +91,14 @@ No building of code is required for this application.
 
 To upload the datasets into HDFS, follow the commands within `/data_ingest` directory.  
 
-All the cleaning, ETL, and analysis codes are run in the Spark Shell (REPL). In order to run the code, copy and paste the code into the Spark Shell. Comments are also written within the code to provide clearer description of the different analyses.
+All the cleaning, ETL, and analysis codes were originally run in the Spark Shell (REPL). In order to run the code, copy and paste the code into the Spark Shell. Comments are also written within the code to provide clearer description of the different analyses.
+
+Aside from running the code in Spark Shell, user can also run the it by submitting a Spark job with the JAR file `bdad_prject_2.11-0.1.jar` provided in the `/app_code/BDAD_projct/target/scala-2.11`directory.
+
+The command that is used for submitting a Spark job is the following:
+```
+spark2-submit --name "BDAD-project" --class "BDAD_project" --master yarn --deploy-mode cluster --verbose --driver-memory 5G --executor-memory 2G --num-executors 10 ~/bdad_prject_2.11-0.1.jar
+```
 
 In order to visualize the results on Tableau, we have to first save our Spark analysis results into Hive Tables in HDFS, then export the Hive tables as csv files to Dumbo locally, and finally manually transfer them to our local computer. This is because the data transfer rate between Tableau and Dumbo directly is too slow to handle the large volume of data.
 
